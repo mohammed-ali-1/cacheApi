@@ -12,7 +12,6 @@ describe('GET /cache/:cacheKey', () => {
       .then((res) => {
         const body = res.body
         expect(body).to.contain.property('value')
-        console.log(body)
         done()
       })
       .catch((err) => done(err))
@@ -23,7 +22,6 @@ describe('GET /cache/:cacheKey', () => {
       .get('/cache/1')
       .then((res) => {
         const body = res.body
-        console.log(body)
         expect(body).to.contain.property('value')
         done()
       })
