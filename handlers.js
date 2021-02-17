@@ -167,6 +167,8 @@ const handlePostCache = async (req, res) => {
           },
         }
       )
+
+      res.status(200).end()
     } catch (error) {
       console.log(error)
       return res.status(500).end()
