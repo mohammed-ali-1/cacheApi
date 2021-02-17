@@ -9,6 +9,10 @@ const mongoDbUrl = process.env.MONGO_DB_URL || 'mongodb://localhost:27017/cacheA
 const app = express()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+
+const cacheLimitCount = process.env.CACHE_LIMIT || 5
+const defaultTtl = 30 //in minutes
+
 MongoClient.connect(mongoDbUrl, { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 10 })
   .then((client) => {
     db = client.db('cacheApi')
