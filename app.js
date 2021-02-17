@@ -67,3 +67,6 @@ const handleGetCacheKey = async (req, res) => {
     return res.status(500).end()
   }
 }
+
+app.get('/cache/:cacheKey', handleGetCacheKey)
+
