@@ -31,8 +31,7 @@ describe('GET /cache', () => {
       .then((res) => {
         const body = res.body
         expect(body).to.contain.property('items')
-        expect(body.items.length).to.equal(3)
-        console.log(body)
+        expect(body.items.length).to.equal(2)
         done()
       })
       .catch((err) => done(err))
