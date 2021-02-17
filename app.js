@@ -10,3 +10,60 @@ MongoClient.connect(mongoDbUrl, { useNewUrlParser: true, useUnifiedTopology: tru
     collection = db.collection('cache')
   })
   .catch((error) => console.error(error))
+
+const handleGetCacheKey = async (req, res) => {
+  const cacheKey = req.params.cacheKey
+  const query = { key: cacheKey }
+
+  try {
+    const cacheItem = await collection.findOne(query)
+    //The key is not found in the cache:
+    if (cacheItem === null) {
+      console.log('Cache miss')
+      const value = makeRandomString(24)
+
+      //Before inserting, make sure the number of limited items is not exceeded
+      const cacheItemsCount = await collection.countDocuments({})
+      if (cacheItemsCount > cacheLimitCount) {
+        //Get the oldest cache item and overwrite it
+        const oldestItem = await collection.find().sort({ ttl: 1 }).limit(1).toArray()[0]
+        await collection.updateOne(
+          { _id: oldestItem._id },
+          {
+            $set: {
+              ttl: new Date(new Date().getTime() + defaultTtl * 60000),
+              key: cacheKey,
+              value: value,
+            },
+          }
+        )
+      } else {
+        collection.insertOne({
+          key: cacheKey,
+          value,
+          ttl: new Date(new Date().getTime() + defaultTtl * 60000),
+        })
+      }
+
+      return res.status(200).json({ value })
+    }
+
+    //The key is found
+    console.log('Cache hit')
+
+    //Update the TTL of the hit cache item
+    await collection.updateOne(
+      { key: cacheKey },
+      {
+        $set: {
+          ttl: new Date(new Date().getTime() + defaultTtl * 60000),
+        },
+      }
+    )
+
+    return res.status(200).json(cacheItem)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).end()
+  }
+}
