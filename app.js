@@ -1,9 +1,14 @@
+const express = require('express')
+const bodyParser = require('body-parser')
 const MongoClient = require('mongodb').MongoClient
 
 let db
 let collection
 const mongoDbUrl = process.env.MONGO_DB_URL || 'mongodb://localhost:27017/cacheApi'
 
+const app = express()
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 MongoClient.connect(mongoDbUrl, { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 10 })
   .then((client) => {
     db = client.db('cacheApi')
