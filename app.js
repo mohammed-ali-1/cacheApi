@@ -78,13 +78,18 @@ const handleGetCacheKey = async (req, res) => {
   }
 }
 
+const handleGetAllItems = async (req, res) => {
+  const allItems = await collection.find({}).toArray()
+  return res.status(200).json(allItems)
+}
+
 const handleDeleteCacheKey = async (req, res) => {}
 
 app.get('/cache/:cacheKey', handleGetCacheKey)
 
 app.delete('/cache/:cacheKey', handleDeleteCacheKey)
 
-app.get('/cache', (req, res) => {})
+app.get('/cache', handleGetAllItems)
 app.post('/cache', (req, res) => {})
 app.delete('/cache', (req, res) => {})
 
