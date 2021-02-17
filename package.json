@@ -8,5 +8,9 @@
     "test": "mocha --recursive --exit"
   },
   "author": "Mohammed Al-Ameen",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.3.0",
+    "mocha": "^8.3.0"
+  }
 }
