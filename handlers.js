@@ -1,23 +1,13 @@
 const { makeRandomString } = require('./helpers')
-const MongoClient = require('mongodb').MongoClient
+const { connect } = require('./db')
 
 const cacheLimitCount = process.env.CACHE_LIMIT || 5
 const defaultTtl = process.env.DEAFAULT_TTL || 30 //in minutes
 
-let db
-let collection
-const mongoDbUrl = process.env.MONGO_DB_URL || 'mongodb://localhost:27017/cacheApi'
-
-MongoClient.connect(mongoDbUrl, { useNewUrlParser: true, useUnifiedTopology: true, poolSize: 10 })
-  .then((client) => {
-    db = client.db('cacheApi')
-    collection = db.collection('cache')
-  })
-  .catch((error) => console.error(error))
-
 const handleGetCacheKey = async (req, res) => {
   const cacheKey = req.params.cacheKey
   const query = { key: cacheKey }
+  collection = await connect('cacheApi', 'cache')
 
   try {
     const cacheItem = await collection.findOne(query)
@@ -91,6 +81,8 @@ const handleGetCacheKey = async (req, res) => {
 }
 
 const handleGetAllItems = async (req, res) => {
+  collection = await connect('cacheApi', 'cache')
+
   try {
     const allItems = await collection.find({}).toArray()
     return res.status(200).json(allItems)
@@ -101,6 +93,8 @@ const handleGetAllItems = async (req, res) => {
 }
 
 const handleDeleteAllItems = async (req, res) => {
+  collection = await connect('cacheApi', 'cache')
+
   try {
     const result = await collection.deleteMany({})
     if (result.deletedCount === 0) {
@@ -115,6 +109,8 @@ const handleDeleteAllItems = async (req, res) => {
 }
 
 const handleDeleteCacheKey = async (req, res) => {
+  collection = await connect('cacheApi', 'cache')
+
   const cacheKey = req.params.cacheKey
   try {
     const result = await collection.deleteOne({ key: cacheKey })
@@ -130,6 +126,8 @@ const handleDeleteCacheKey = async (req, res) => {
 }
 
 const handlePostCache = async (req, res) => {
+  collection = await connect('cacheApi', 'cache')
+
   const cacheKey = req.body.key
   let value = req.body.value
   let ttl = req.body.ttl
