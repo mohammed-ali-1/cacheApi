@@ -36,9 +36,9 @@ const handleGetCacheKey = async (req, res) => {
       const cacheItemsCount = await collection.countDocuments({})
       if (cacheItemsCount === cacheLimitCount) {
         //Get the oldest cache item and overwrite it
-        const oldestItem = await collection.find().sort({ ttl: 1 }).limit(1).toArray()[0]
+        const oldestItem = await collection.find().sort({ ttl: 1 }).limit(1).toArray()
         await collection.updateOne(
-          { _id: oldestItem._id },
+          { _id: oldestItem[0]['_id'] },
           {
             $set: {
               ttl: new Date(new Date().getTime() + defaultTtl * 60000),
