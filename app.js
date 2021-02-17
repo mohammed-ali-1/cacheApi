@@ -97,14 +97,70 @@ const handleDeleteCacheKey = async (req, res) => {
   } else {
     return res.status(200).end()
   }
-}
+const handlePostCache = async (req, res) => {
+  const cacheKey = req.body.key
+  let value = req.body.value
+  let ttl = req.body.ttl
 
+  if (typeof cacheKey === 'undefined') {
+    return res.status(400).json({ errorMessage: "The 'key' body parameter is required" })
+  }
+
+  if (typeof value === 'undefined') {
+    value = makeRandomString(20)
+  }
+
+  if (typeof ttl === 'undefined') {
+    ttl = defaultTtl
+  }
+
+  //Before inserting, make sure the number of limited items is not exceeded
+  let cacheItemsCount
+  try {
+    cacheItemsCount = await collection.countDocuments({})
+  } catch (error) {
+    console.log(error)
+    return res.status(500).end()
+  }
+
+  if (cacheItemsCount === cacheLimitCount) {
+    //Get the oldest cache item and overwrite it
+    try {
+      const oldestItem = await collection.find().sort({ ttl: 1 }).limit(1).toArray()
+      await collection.updateOne(
+        { _id: oldestItem[0]['_id'] },
+        {
+          $set: {
+            ttl: new Date(new Date().getTime() + ttl * 60000).getTime(),
+            key: cacheKey,
+            value: value,
+          },
+        }
+      )
+    } catch (error) {
+      console.log(error)
+      return res.status(500).end()
+    }
+  } else {
+    const query = { key: cacheKey }
+    const update = { $set: { value, ttl: new Date(new Date().getTime() + ttl * 60000).getTime() } }
+    const options = { upsert: true }
+
+    try {
+      await collection.updateOne(query, update, options)
+      return res.status(200).end()
+    } catch (error) {
+      console.log(error)
+      return res.status(500).end()
+    }
+  }
+}
 app.get('/cache/:cacheKey', handleGetCacheKey)
 
 app.delete('/cache/:cacheKey', handleDeleteCacheKey)
 
 app.get('/cache', handleGetAllItems)
-app.post('/cache', (req, res) => {})
+app.post('/cache', handlePostCache)
 app.delete('/cache', handleDeleteAllItems)
 
 module.exports = app
