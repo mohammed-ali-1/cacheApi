@@ -71,7 +71,7 @@ const handleGetCacheKey = async (req, res) => {
       }
     )
 
-    return res.status(200).json(cacheItem)
+    return res.status(200).json({ value: cacheItem['value'] })
   } catch (error) {
     console.log(error)
     return res.status(500).end()
