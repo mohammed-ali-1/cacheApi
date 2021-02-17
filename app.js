@@ -79,24 +79,44 @@ const handleGetCacheKey = async (req, res) => {
 }
 
 const handleGetAllItems = async (req, res) => {
-  const allItems = await collection.find({}).toArray()
-  return res.status(200).json(allItems)
+  try {
+    const allItems = await collection.find({}).toArray()
+    return res.status(200).json(allItems)
+  } catch (error) {
+    console.log(error)
+    return res.status(500).end()
+  }
 }
 
 const handleDeleteAllItems = async (req, res) => {
-  await collection.deleteMany({})
-  return res.status(200).end()
+  try {
+    const result = await collection.deleteMany({})
+    if (result.deletedCount === 0) {
+      return res.status(404).end()
+    } else {
+      return res.status(200).end()
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).end()
+  }
 }
 
 const handleDeleteCacheKey = async (req, res) => {
   const cacheKey = req.params.cacheKey
-
-  const result = await collection.deleteOne({ key: cacheKey })
-  if (result.deletedCount === 0) {
-    return res.status(404).end()
-  } else {
-    return res.status(200).end()
+  try {
+    const result = await collection.deleteOne({ key: cacheKey })
+    if (result.deletedCount === 0) {
+      return res.status(404).end()
+    } else {
+      return res.status(200).end()
+    }
+  } catch (error) {
+    console.log(error)
+    return res.status(500).end()
   }
+}
+
 const handlePostCache = async (req, res) => {
   const cacheKey = req.body.key
   let value = req.body.value
