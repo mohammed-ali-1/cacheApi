@@ -1,5 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const { makeRandomString } = require('./helpers')
 const MongoClient = require('mongodb').MongoClient
 
 let db
