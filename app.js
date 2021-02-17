@@ -88,7 +88,16 @@ const handleDeleteAllItems = async (req, res) => {
   return res.status(200).end()
 }
 
-const handleDeleteCacheKey = async (req, res) => {}
+const handleDeleteCacheKey = async (req, res) => {
+  const cacheKey = req.params.cacheKey
+
+  const result = await collection.deleteOne({ key: cacheKey })
+  if (result.deletedCount === 0) {
+    return res.status(404).end()
+  } else {
+    return res.status(200).end()
+  }
+}
 
 app.get('/cache/:cacheKey', handleGetCacheKey)
 
