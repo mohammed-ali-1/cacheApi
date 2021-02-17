@@ -1,5 +1,5 @@
 const { makeRandomString } = require('./helpers')
-const { connect } = require('./db')
+const { connect } = process.env.NODE_ENV === 'test' ? require('./tests/mockDb') : require('./db')
 
 const cacheLimitCount = process.env.CACHE_LIMIT || 5
 const defaultTtl = process.env.DEAFAULT_TTL || 30 //in minutes
