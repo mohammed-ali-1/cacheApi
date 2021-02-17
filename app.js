@@ -34,7 +34,7 @@ const handleGetCacheKey = async (req, res) => {
 
       //Before inserting, make sure the number of limited items is not exceeded
       const cacheItemsCount = await collection.countDocuments({})
-      if (cacheItemsCount > cacheLimitCount) {
+      if (cacheItemsCount === cacheLimitCount) {
         //Get the oldest cache item and overwrite it
         const oldestItem = await collection.find().sort({ ttl: 1 }).limit(1).toArray()[0]
         await collection.updateOne(
