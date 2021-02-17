@@ -61,6 +61,24 @@ const handleGetCacheKey = async (req, res) => {
     //The key is found
     console.log('Cache hit')
 
+    //The TTL is exceeded
+    if (new Date().getTime() > cacheItem.ttl) {
+      //Generate a new random value
+      const newValue = makeRandomString(20)
+
+      await collection.updateOne(
+        { key: cacheKey },
+        {
+          $set: {
+            ttl: new Date(new Date().getTime() + defaultTtl * 60000).getTime(),
+            value: newValue,
+          },
+        }
+      )
+
+      return res.status(200).json({ value: newValue })
+    }
+
     //Update the TTL of the hit cache item
     await collection.updateOne(
       { key: cacheKey },
