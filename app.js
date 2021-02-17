@@ -41,7 +41,7 @@ const handleGetCacheKey = async (req, res) => {
           { _id: oldestItem[0]['_id'] },
           {
             $set: {
-              ttl: new Date(new Date().getTime() + defaultTtl * 60000),
+              ttl: new Date(new Date().getTime() + defaultTtl * 60000).getTime(),
               key: cacheKey,
               value: value,
             },
@@ -51,7 +51,7 @@ const handleGetCacheKey = async (req, res) => {
         collection.insertOne({
           key: cacheKey,
           value,
-          ttl: new Date(new Date().getTime() + defaultTtl * 60000),
+          ttl: new Date(new Date().getTime() + defaultTtl * 60000).getTime(),
         })
       }
 
@@ -66,7 +66,7 @@ const handleGetCacheKey = async (req, res) => {
       { key: cacheKey },
       {
         $set: {
-          ttl: new Date(new Date().getTime() + defaultTtl * 60000),
+          ttl: new Date(new Date().getTime() + defaultTtl * 60000).getTime(),
         },
       }
     )
@@ -175,10 +175,9 @@ const handlePostCache = async (req, res) => {
     }
   }
 }
+
 app.get('/cache/:cacheKey', handleGetCacheKey)
-
 app.delete('/cache/:cacheKey', handleDeleteCacheKey)
-
 app.get('/cache', handleGetAllItems)
 app.post('/cache', handlePostCache)
 app.delete('/cache', handleDeleteAllItems)
