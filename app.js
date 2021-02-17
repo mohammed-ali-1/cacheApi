@@ -73,5 +73,14 @@ const handleGetCacheKey = async (req, res) => {
   }
 }
 
+const handleDeleteCacheKey = async (req, res) => {}
+
 app.get('/cache/:cacheKey', handleGetCacheKey)
 
+app.delete('/cache/:cacheKey', handleDeleteCacheKey)
+
+app.get('/cache', (req, res) => {})
+app.post('/cache', (req, res) => {})
+app.delete('/cache', (req, res) => {})
+
+module.exports = app
