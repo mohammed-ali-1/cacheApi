@@ -85,7 +85,7 @@ const handleGetAllItems = async (req, res) => {
 
   try {
     const allItems = await collection.find({}).toArray()
-    return res.status(200).json(allItems)
+    return res.status(200).json({ items: allItems })
   } catch (error) {
     console.log(error)
     return res.status(500).end()
