@@ -83,6 +83,11 @@ const handleGetAllItems = async (req, res) => {
   return res.status(200).json(allItems)
 }
 
+const handleDeleteAllItems = async (req, res) => {
+  await collection.deleteMany({})
+  return res.status(200).end()
+}
+
 const handleDeleteCacheKey = async (req, res) => {}
 
 app.get('/cache/:cacheKey', handleGetCacheKey)
@@ -91,6 +96,6 @@ app.delete('/cache/:cacheKey', handleDeleteCacheKey)
 
 app.get('/cache', handleGetAllItems)
 app.post('/cache', (req, res) => {})
-app.delete('/cache', (req, res) => {})
+app.delete('/cache', handleDeleteAllItems)
 
 module.exports = app
